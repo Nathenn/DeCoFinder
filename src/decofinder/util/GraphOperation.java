@@ -125,25 +125,26 @@ public class GraphOperation {
 		@Override
 		public int compare(Vertex v1, Vertex v2) {
 			
-				  if (v1.getVertices(Direction.BOTH) instanceof Collection)
-				    return ((Collection<?>)v1.getVertices(Direction.BOTH)).size();
-				  // else iterate
-				  int v1_size = 0;
-				  for (Iterator<Vertex> it = v1.getVertices(Direction.BOTH).iterator(); it.hasNext(); ){ 
-					  v1_size++; 
-					  it.next();
-				  }
+			  if (v1.getVertices(Direction.BOTH) instanceof Collection)
+			    return ((Collection<?>)v1.getVertices(Direction.BOTH)).size();
+			  // else iterate
+			  int v1_size = 0;
+			  for (Iterator<Vertex> it = v1.getVertices(Direction.BOTH).iterator(); it.hasNext(); ){ 
+				  v1_size++; 
+				  it.next();
+			  }
+			  
+			  if (v2.getVertices(Direction.BOTH) instanceof Collection)
+				    return ((Collection<?>)v2.getVertices(Direction.BOTH)).size();
+			  // else iterate
+			  int v2_size = 0;
+			  for (Iterator<Vertex> it = v2.getVertices(Direction.BOTH).iterator(); it.hasNext(); ) {
+				  v2_size++;
+				  it.next();
+			  }
 				  
-				  if (v2.getVertices(Direction.BOTH) instanceof Collection)
-					    return ((Collection<?>)v2.getVertices(Direction.BOTH)).size();
-				  // else iterate
-				  int v2_size = 0;
-				  for (Iterator<Vertex> it = v2.getVertices(Direction.BOTH).iterator(); it.hasNext(); ) {
-					  v2_size++;
-					  it.next();
-				  }
-
-			return Integer.compare(v2_size, v1_size);
+			  return v2_size > v1_size ? v1_size : v2_size;
+			//return Integer.compare(v2_size, v1_size); 
 		}
 		
 	};
@@ -207,7 +208,38 @@ public class GraphOperation {
 		}
 		
 	}
+	
+	/*Graph's size*/
+	@SuppressWarnings("unused")
+	public static int getGraphSize(Graph g){
+		int i=0;
+		for(Vertex v : g.getVertices()){
+			i++;
+		}
+		return i;
+	}
+	
+	
+	
+	public static void removeVertices(List<Vertex> collection, List<Vertex> removable){
+		
+		
+		
+		for(Iterator<Vertex> it = removable.iterator(); it.hasNext();){
+			Vertex v = it.next();
+			
+			if(GraphOperation.contains(collection, v)){
+				collection.remove(v);
+			}
+			
+			
+		}
+	}
+
+	
 }
+
+
 
 
 	

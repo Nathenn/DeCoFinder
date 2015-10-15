@@ -41,10 +41,12 @@ import javax.swing.JComboBox;
 
 //import com.teradata.jdbc.jdbc_4.io.TDNetworkIOIF.Lookup;
 import com.tinkerpop.blueprints.Graph;
+import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import com.tinkerpop.blueprints.util.io.graphml.GraphMLReader;
 
 import decofinder.algorithm.*;
+import decofinder.display.DisplayGraph;
 import decofinder.util.*;
 
 import java.awt.event.ActionListener;
@@ -64,6 +66,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.JTextArea;
 import javax.swing.JScrollBar;
@@ -76,12 +79,14 @@ import java.awt.FlowLayout;
 import javax.swing.BoxLayout;
 import javax.swing.DropMode;
 
+import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.io.exporter.api.ExportController;
 import org.gephi.io.importer.api.ImportController;
 import org.gephi.io.processor.plugin.DefaultProcessor;
 import org.gephi.layout.plugin.force.StepDisplacement;
 import org.gephi.layout.plugin.force.yifanHu.YifanHuLayout;
+import org.gephi.layout.plugin.forceAtlas.ForceAtlasLayout;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.openide.util.Lookup;
@@ -103,7 +108,7 @@ public class MainFrame {
 	
 	private static String cname[] = {"----Válasszon algoritmust----","CliqueEnum","CliqueEnum(Deg)","CliqueEnum(Tom)","CliqueEnum(Deg-Tom)","K-Core"};
 	
-	Graph graph = new TinkerGraph();
+	Graph graph;
 	Graph resultGraph = new TinkerGraph();
 	private JTextField txtParamterek;
 	private JTextField txtMinMret;
@@ -191,8 +196,10 @@ public class MainFrame {
 					
 					InputStream is;
 					try {
+						graph = new TinkerGraph();
 						is = new FileInputStream(filePath);
 						GraphMLReader.inputGraph(graph, is);
+						
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -297,7 +304,7 @@ public class MainFrame {
 				//read inputs
 				if(cliqueEnumPanel.isVisible()){
 					
-					if(minIn.getText() != null){
+					if(!minIn.getText().isEmpty()){
 						try{
 							min = Integer.parseInt(minIn.getText());
 						}
@@ -308,7 +315,7 @@ public class MainFrame {
 						
 					}
 					
-					if(maxIn.getText() != null){
+					if(!maxIn.getText().isEmpty()){
 						try{
 							max = Integer.parseInt(maxIn.getText());
 						}
@@ -323,6 +330,7 @@ public class MainFrame {
 					if(textField_1.getText() != null){
 						try{
 							k = Integer.parseInt(textField_1.getText());
+							
 						}
 						catch(NumberFormatException er){
 							JOptionPane.showMessageDialog(frame, "Pozitív egész számot adjon meg K értékének!");
@@ -339,28 +347,33 @@ public class MainFrame {
 					if(algorithm == "CliqueEnum"){
 						CliqueEnum cl = new CliqueEnum();
 						cl.setMinDense(min); cl.setMaxDense(max);
-						System.out.println("min: " + min + " és " + "max: " + max);
 						resultGraph = cl.createDenseComponent(graph,"output.graphml");
 					}else if(algorithm == "CliqueEnum(Deg)"){
 						CliqueEnum cl = new CliqueEnum();
 						cl.setMinDense(min); cl.setMaxDense(max);
 						cl.setDegOrdering();
-						cl.createDenseComponent(graph,"output.graphml");
+						resultGraph = cl.createDenseComponent(graph,"output.graphml");
 					}else if(algorithm == "CliqueEnum(Tom)"){
 						CliqueEnum cl = new CliqueEnum();
 						cl.setMinDense(min); cl.setMaxDense(max);
 						cl.setTomita();
-						cl.createDenseComponent(graph,"output.graphml");
+						resultGraph = cl.createDenseComponent(graph,"output.graphml");
 					}else if(algorithm == "CliqueEnum(Deg-Tom)"){
 						CliqueEnum cl = new CliqueEnum();
 						cl.setMinDense(min); cl.setMaxDense(max);
 						cl.setDegOrdering();
 						cl.setTomita();
-						cl.createDenseComponent(graph,"output.graphml");
+						resultGraph = cl.createDenseComponent(graph,"output.graphml");
 					}else if(algorithm == "K-Core"){
 						KcoreEnum kc = new KcoreEnum();
 						kc.setK(k);
-						kc.createDenseComponent(graph, "output.graphml");
+						
+						
+						//debugprint
+						//System.out.println("1:  " + graph.getVertices().toString());
+						resultGraph = kc.createDenseComponent(graph, "output.graphml");
+						//System.out.println("2:  " + graph.getVertices().toString());
+						//return;
 					}
 				}else{
 					JOptionPane.showMessageDialog(frame, "Nem választott algoritmust vagy nem adott meg input gráfot!");
@@ -377,49 +390,7 @@ public class MainFrame {
 		JButton btnMegtekint = new JButton("Megtekint");
 		btnMegtekint.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
-				//Generate a .pdf file (without signing of cliques)
-				//source: http://stackoverflow.com/questions/5330889/gephi-api-example
-				
-				File graphmlFile = new File("output.graphml");
-				
-				//Init a project - and therefore a workspace
-				ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
-				pc.newProject();
-				Workspace workspace = pc.getCurrentWorkspace();
-
-				// get import controller
-				ImportController importController = Lookup.getDefault().lookup(ImportController.class);
-
-				//Import file
-				org.gephi.io.importer.api.Container container = null;
-				try {
-					container = importController.importFile(graphmlFile);
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				//Append imported data to GraphAPI
-				importController.process(container, new DefaultProcessor(), workspace);
-
-				//Export graph to PDF
-				ExportController ec = Lookup.getDefault().lookup(ExportController.class);
-				try {
-					ec.exportFile(new File("graph.pdf"));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				//open the generated .pdf file
-				File graph = new File("graph.pdf");
-				try {
-					Desktop.getDesktop().open(graph);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				DisplayGraph.display(); 
 			}
 		});
 		btnMegtekint.setBounds(373, 75, 101, 23);
@@ -431,12 +402,17 @@ public class MainFrame {
 		btnMegnyits.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				try {
-					Process p = new ProcessBuilder("C:\\Program Files (x86)\\Gephi-0.8.2\\bin\\gephi64.exe", "output.graphml").start();
-				} catch (IOException e) {
-					JOptionPane.showMessageDialog(frame, "Nem található Gephi a \n C:\\Program Files (x86)\\Gephi-0.8.2\\bin\\gephi64.exe \n helyen!");
+				if(new File("output.graphml").exists()){
+					System.out.println("Output.graphml megnyitasa!");
+					try {
+						new ProcessBuilder("C:\\Program Files (x86)\\Gephi-0.8.2\\bin\\gephi64.exe", "output.graphml").start();
+					} catch (IOException e) {
+						JOptionPane.showMessageDialog(frame, "Nem található Gephi a \n C:\\Program Files (x86)\\Gephi-0.8.2\\bin\\gephi64.exe \n helyen!");
+						return;
+					}
+				}else{
+					JOptionPane.showMessageDialog(frame, "Nem található output.graphml!");
 					return;
-					
 				}
 			}
 		});
@@ -485,8 +461,6 @@ public class MainFrame {
 		txtParamterek.setText("Param\u00E9terek:");
 		txtParamterek.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		txtParamterek.setColumns(10);
-		
-		
 		
 		//kCorePanel.K
 		txtK = new JTextField();

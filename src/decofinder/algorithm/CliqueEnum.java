@@ -1,5 +1,6 @@
 package decofinder.algorithm;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -56,8 +57,8 @@ public class CliqueEnum implements DenseComponentAlgorithm{
 			algorithm = "CliqueEnum(Tom)";
 		}else if(!algTomita == true && degOrdering == true){	//CliqueEnum(Deg)
 			System.out.println("Algorithm: CliqueEnum(Deg)");
-			cand.sort(GraphOperation.compare);
-			cliqueEnumeration(c, cand, nonCand);
+			//cand.sort(GraphOperation.compare);
+			cliqueEnumeration(c, degOrder(graph, (ArrayList<Vertex>) cand), nonCand);
 			algorithm = "CliqueEnum(Deg)";
 		}else if(algTomita == true && degOrdering == true){		//CliqueEnum(Deg-Tom)
 			System.out.println("Algorithm: CliqueEnum(Deg-Tom)");
@@ -99,6 +100,10 @@ public class CliqueEnum implements DenseComponentAlgorithm{
 
 		//output: generate the .graphml file
 		try {
+			if(new File("output.graphml").exists()){
+				new File("output.graphml").delete();
+				System.out.println("Output.graphml frissitve!");
+			}
 			OutputStream os = new FileOutputStream(output);
 			GraphMLWriter.outputGraph(graph, os);
 			System.out.println("Done!");
@@ -121,22 +126,18 @@ public class CliqueEnum implements DenseComponentAlgorithm{
 				
 				if(minDense != 0 && maxDense != 0){
 					if(c.size() >= minDense && c.size() <= maxDense){
-						System.out.println("itt1");
 						cliques.add(new ArrayList<Vertex>(c));
 					}
 				}else if(minDense != 0 && maxDense == 0){
 					if(c.size() >= minDense){
-						System.out.println("itt2");
 						cliques.add(new ArrayList<Vertex>(c));
 					}
 				}else if(minDense == 0 && maxDense != 0){
 					if(c.size() <= maxDense){
-						System.out.println("itt3");
 						cliques.add(new ArrayList<Vertex>(c));
 					}
 				}
 			}else{
-				System.out.println("itt4");
 				cliques.add(new ArrayList<Vertex>(c));
 			}
 				
@@ -241,6 +242,22 @@ public class CliqueEnum implements DenseComponentAlgorithm{
 		}
 	}
 	
+	/*Degeneracy ordering of the graph*/
+	private ArrayList<Vertex> degOrder(Graph g, ArrayList<Vertex> cand){
+		
+		Graph G = g;
+		ArrayList<Vertex> newcand = new ArrayList<Vertex>();
+		
+		while(GraphOperation.getGraphSize(G)!=0){
+			ArrayList<Vertex> tempcand = new ArrayList<Vertex>();
+			tempcand.addAll( (Collection<? extends Vertex>) G.getVertices());	
+			tempcand.sort(GraphOperation.compare);
+			
+			newcand.add(tempcand.get(0));		
+		}
+		return newcand;
+	}
+	
 	/*Cand és nonCand uniójából a legnagyobb fokszámú csúcsot választjuk ki*/
 	private Vertex choosePivotByDegree(List<Vertex> union){
 		union.sort(GraphOperation.compare);
@@ -252,25 +269,20 @@ public class CliqueEnum implements DenseComponentAlgorithm{
 	}
 
 	public void setTomita() {
-		this.algTomita = true;
-		
+		this.algTomita = true;	
 	}
-
 
 	public int getMinDense() {
 		return minDense;
 	}
 
-
 	public void setMinDense(int minDense) {
 		this.minDense = minDense;
 	}
 
-
 	public int getMaxDense() {
 		return maxDense;
 	}
-
 
 	public void setMaxDense(int maxDense) {
 		this.maxDense = maxDense;
