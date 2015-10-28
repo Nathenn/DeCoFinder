@@ -5,19 +5,22 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.swing.InputVerifier;
+import javax.swing.JComponent;
+import javax.swing.JTextField;
 
 import com.tinkerpop.blueprints.Direction;
-import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Vertex;
 
 public class GraphOperation {
 	
 	/*Ket csucslista metszetet adja vissza*/
-	public static List<Vertex> intersect(Iterable<Vertex> c1, Iterable<Vertex> c2){
+	public static CopyOnWriteArrayList<Vertex> intersect(Iterable<Vertex> c1, Iterable<Vertex> c2){
 		
-		List<Vertex> result = new ArrayList<Vertex>();
+		CopyOnWriteArrayList<Vertex> result = new CopyOnWriteArrayList<Vertex>();
 		
 		for (Vertex v1 : c1) 
 			for(Vertex v2 : c2)
@@ -27,11 +30,12 @@ public class GraphOperation {
 		return result;
 	}
 	
-	/*Egy csucsot uniozunk hozza egy csucslistahoz (Iterable miatt kell igy)*/
+	/* 
+	 * Egy csucsot uniozunk hozza egy csucslistahoz (Iterable miatt kell igy)
+	 * */
 	public static List<Vertex> unionVertex(Iterable<Vertex> c1, Vertex v1){
 		
 		if(!contains(c1,v1)){
-		
 			List<Vertex> result = new ArrayList<Vertex>();
 			result = (List<Vertex>) c1;
 			result.add(v1);
@@ -70,11 +74,9 @@ public class GraphOperation {
 		for (Vertex vertex : c1)
 			c1list.add(vertex);
 
-		
 		for(Vertex v2 : c2list){
-			if(c1list.contains(v2)){
+			if(c1list.contains(v2))
 				c1list.remove(v2);
-			}
 		}
 
 		return c1list;
@@ -143,8 +145,8 @@ public class GraphOperation {
 				  it.next();
 			  }
 				  
-			  return v2_size > v1_size ? v1_size : v2_size;
-			//return Integer.compare(v2_size, v1_size); 
+			  //return v2_size > v1_size ? v1_size : v2_size;
+			return Integer.compare(v1_size, v2_size); 
 		}
 		
 	};
@@ -172,42 +174,6 @@ public class GraphOperation {
 		return Nbors;
 	}
 
-	/*Torli a ket csucs kozotti elt (kcoreEnum)*/
-	public static void removeEdge(Vertex v, Vertex v2) {
-		
-		Edge toRemove = null;
-		Edge toRemove2 = null;
-		
-		for(Iterator<Edge> ite = v.getEdges(Direction.BOTH).iterator(); ite.hasNext();){
-			Edge e = ite.next();
-			for(Iterator<Edge> ite2 = v2.getEdges(Direction.BOTH).iterator(); ite2.hasNext();){
-				Edge e2 = ite2.next();
-				if(e.equals(e2)){
-					toRemove = e;
-					toRemove2 = e2;
-					break;
-				}
-			}
-			if(toRemove != null)
-				break;
-		}
-		
-		if(toRemove!=null){
-			for(Iterator<Edge> ite = v.getEdges(Direction.BOTH).iterator(); ite.hasNext();){
-				Edge e = ite.next();
-				if(e.equals(toRemove)){
-					ite.remove();
-				}
-			}
-			for(Iterator<Edge> ite = v2.getEdges(Direction.BOTH).iterator(); ite.hasNext();){
-				Edge e = ite.next();
-				if(e.equals(toRemove)){
-					ite.remove();
-				}
-			}
-		}
-		
-	}
 	
 	/*Graph's size*/
 	@SuppressWarnings("unused")
@@ -219,7 +185,15 @@ public class GraphOperation {
 		return i;
 	}
 	
-	
+	/*Get the requested vertex from the list*/
+	public static Vertex getVertexFromList(List<Vertex> list, Vertex vertex){
+		for(Vertex v : list){
+			if(v.equals(vertex)){
+				return v;
+			}
+		}
+		return null;
+	}
 	
 	public static void removeVertices(List<Vertex> collection, List<Vertex> removable){
 		
@@ -235,6 +209,36 @@ public class GraphOperation {
 			
 		}
 	}
+
+	public static CopyOnWriteArrayList<Vertex> updateListFromGraph(CopyOnWriteArrayList<Vertex> graphVertices, Graph graph) {
+		graphVertices.clear();
+		graphVertices.addAll((Collection<? extends Vertex>) graph.getVertices());
+		return graphVertices;
+	}
+
+	public static boolean graphContains(Graph graph, Vertex v2) {
+		for(Vertex v : graph.getVertices()){
+			if(v.equals(v2))
+				return true;
+		}
+		return false;
+	}
+	
+	//create inputVerifier for textField
+	InputVerifier verifier = new InputVerifier() {
+	      public boolean verify(JComponent comp) {
+	        boolean returnValue;
+	        JTextField textField = (JTextField) comp;
+	        try {
+	          Integer.parseInt(textField.getText());
+	          returnValue = true;
+	        } catch (NumberFormatException e) {
+	          returnValue = false;
+	        }
+	        return returnValue;
+	      }
+	    };
+	
 
 	
 }

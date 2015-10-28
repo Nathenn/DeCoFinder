@@ -2,28 +2,13 @@ package decofinder.gui;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import javax.swing.JTextPane;
-
-import java.awt.BorderLayout;
-
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
-import javax.swing.JEditorPane;
-import javax.swing.ScrollPaneConstants;
-
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Desktop;
-import java.awt.SystemColor;
-
 import javax.swing.UIManager;
 import javax.swing.JComboBox;
 
@@ -41,7 +26,6 @@ import javax.swing.JComboBox;
 
 //import com.teradata.jdbc.jdbc_4.io.TDNetworkIOIF.Lookup;
 import com.tinkerpop.blueprints.Graph;
-import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import com.tinkerpop.blueprints.util.io.graphml.GraphMLReader;
 
@@ -51,47 +35,13 @@ import decofinder.util.*;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import javax.swing.JTextArea;
-import javax.swing.JScrollBar;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
-import java.awt.FlowLayout;
-
-import javax.swing.BoxLayout;
-import javax.swing.DropMode;
-
-import org.gephi.graph.api.GraphController;
-import org.gephi.graph.api.GraphModel;
-import org.gephi.io.exporter.api.ExportController;
-import org.gephi.io.importer.api.ImportController;
-import org.gephi.io.processor.plugin.DefaultProcessor;
-import org.gephi.layout.plugin.force.StepDisplacement;
-import org.gephi.layout.plugin.force.yifanHu.YifanHuLayout;
-import org.gephi.layout.plugin.forceAtlas.ForceAtlasLayout;
-import org.gephi.project.api.ProjectController;
-import org.gephi.project.api.Workspace;
-import org.openide.util.Lookup;
-
-import java.awt.GridLayout;
 
 
 public class MainFrame {
@@ -125,6 +75,7 @@ public class MainFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 					MainFrame window = new MainFrame();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
@@ -146,8 +97,8 @@ public class MainFrame {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 500, 340);
 		frame.setResizable(false);
+		frame.setBounds(100, 100, 500, 340);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -285,20 +236,7 @@ public class MainFrame {
 		btnMehet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				//create inputVerifier
-				InputVerifier verifier = new InputVerifier() {
-				      public boolean verify(JComponent comp) {
-				        boolean returnValue;
-				        JTextField textField = (JTextField) comp;
-				        try {
-				          Integer.parseInt(textField.getText());
-				          returnValue = true;
-				        } catch (NumberFormatException e) {
-				          returnValue = false;
-				        }
-				        return returnValue;
-				      }
-				    };
+				
 				
 				int min=0, max=0, k=0;
 				//read inputs
@@ -367,13 +305,8 @@ public class MainFrame {
 					}else if(algorithm == "K-Core"){
 						KcoreEnum kc = new KcoreEnum();
 						kc.setK(k);
-						
-						
-						//debugprint
-						//System.out.println("1:  " + graph.getVertices().toString());
+						resultGraph.shutdown();
 						resultGraph = kc.createDenseComponent(graph, "output.graphml");
-						//System.out.println("2:  " + graph.getVertices().toString());
-						//return;
 					}
 				}else{
 					JOptionPane.showMessageDialog(frame, "Nem választott algoritmust vagy nem adott meg input gráfot!");
