@@ -21,7 +21,7 @@ import org.openide.util.Lookup;
 
 public class DisplayGraph {
 
-	private static JFrame frame;
+	
 	
 	public static void display(){
 		//Generate a .pdf file (without signing of cliques)
@@ -29,7 +29,7 @@ public class DisplayGraph {
 		//source2: https://github.com/gephi/gephi-toolkit-demos/blob/master/src/org/gephi/toolkit/demos/HeadlessSimple.java
 
 		if(!new File("output.graphml").exists()){
-			JOptionPane.showMessageDialog(frame, "Nem letezik a vizualizaciohoz szukseges output.graphml!");
+			JOptionPane.showMessageDialog(new JFrame(), "Nem letezik a vizualizaciohoz szukseges output.graphml!");
 			return;
 		}
 
@@ -90,12 +90,12 @@ public class DisplayGraph {
 			try {
 				Desktop.getDesktop().open(new File("graph.pdf"));
 			} catch (IOException e) {
-				JOptionPane.showMessageDialog(frame, "Nem sikerult megnyitni a pdf filet!");
+				JOptionPane.showMessageDialog(new JFrame(), "Nem sikerult megnyitni a pdf filet!");
 				//e.printStackTrace();
 				return;
 			}
 		}else{
-			JOptionPane.showMessageDialog(frame, "Nem található graph.pdf!");
+			JOptionPane.showMessageDialog(new JFrame(), "Nem található graph.pdf!");
 			return;
 		}
 	}

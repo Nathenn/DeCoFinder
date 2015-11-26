@@ -65,10 +65,14 @@ public class KcoreEnum implements DenseComponentAlgorithm {
 		graphVertices.addAll( (Collection<? extends Vertex>) graph.getVertices());
 		graphVertices.sort(GraphOperation.compare);
 
-		while (GraphOperation.getNborSize(graphVertices.get(0)) < k){
+		//int firstDegree = GraphOperation.getNborSize(graphVertices.get(0));
+		while (GraphOperation.getNborSize(graphVertices.get(0)) < k && graphVertices.size() !=0){
 			graph.removeVertex(graphVertices.get(0));
 			GraphOperation.updateListFromGraph(graphVertices, graph);
 			graphVertices.sort(GraphOperation.compare);
+			if(GraphOperation.getGraphSize(graph)==0){
+				break;
+			}
 		}
 		
 //		for(Vertex v : graphVertices){

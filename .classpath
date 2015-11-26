@@ -12,5 +12,20 @@
 			<attribute name="javadoc_location" value="https://gephi.org/docs/api/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Nathen/workspace/DeCoFinder/lib/gs-algo-1.3.jar" sourcepath="C:/Users/Nathen/workspace/DeCoFinder/lib/gs-algo-1.3/gs-algo-1.3-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/Nathen/workspace/DeCoFinder/lib/gs-algo-1.3-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Nathen/workspace/DeCoFinder/lib/gs-core-1.3.jar" sourcepath="C:/Users/Nathen/workspace/DeCoFinder/lib/gs-core-1.3/gs-core-1.3-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/Nathen/workspace/DeCoFinder/lib/gs-core-1.3-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Nathen/workspace/DeCoFinder/lib/gs-ui-1.3/gs-ui-1.3.jar" sourcepath="C:/Users/Nathen/workspace/DeCoFinder/lib/gs-ui-1.3/gs-ui-1.3-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Users/Nathen/workspace/DeCoFinder/lib/gs-ui-1.3/gs-ui-1.3-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

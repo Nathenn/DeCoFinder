@@ -2,10 +2,8 @@ package decofinder.algorithm;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,6 +34,7 @@ public class CliqueEnum implements DenseComponentAlgorithm{
 		
 	@Override
 	public Graph createDenseComponent(Graph graph, String output) {
+		
 		
 		//init
 		cliques = new ArrayList<List<Vertex>>();
@@ -104,8 +103,13 @@ public class CliqueEnum implements DenseComponentAlgorithm{
 				new File("output.graphml").delete();
 				System.out.println("Output.graphml frissitve!");
 			}
-			OutputStream os = new FileOutputStream(output);
-			GraphMLWriter.outputGraph(graph, os);
+			
+			GraphMLWriter writer = new GraphMLWriter(graph);
+			writer.setNormalize(true);
+			writer.outputGraph(output);
+			
+//			OutputStream os = new FileOutputStream(output);
+//			GraphMLWriter.outputGraph(graph, os);
 			System.out.println("Done!");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
